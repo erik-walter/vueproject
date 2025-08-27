@@ -1,19 +1,38 @@
 <template>
   <div id="app">
-    <!-- Navigation -->
     <nav>
       <router-link to="/">Home</router-link> |
-      <router-link to="/favorites">Favoriten</router-link>
+      <router-link to="/favorites">Favoriten</router-link> |
+      <button @click="toggleAuth">
+        {{ authStore.user ? 'Logout' : 'Login' }}
+      </button>
     </nav>
-
-    <!-- Hier werden die Seiten geladen -->
+    <AuthForm v-if="showAuth && !authStore.user" />
     <router-view />
   </div>
 </template>
 
 <script>
+import { ref } from 'vue'
+import { useAuthStore } from './stores/auth'
+import AuthForm from './components/AuthForm.vue'
+
 export default {
-  name: 'App'
+  components: { AuthForm },
+  setup() {
+    const authStore = useAuthStore()
+    const showAuth = ref(false)
+
+    const toggleAuth = async () => {
+      if (authStore.user) {
+        await authStore.logout()
+      } else {
+        showAuth.value = !showAuth.value
+      }
+    }
+
+    return { authStore, showAuth, toggleAuth }
+  }
 }
 </script>
 
