@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1>RAWG Spiele</h1>
+    <h1>RAWG Spiele Test</h1>
     <SearchBar v-model="search" />
     <SortDropdown v-model="sortOrder" />
     <GameList :games="gamesWithFavorites" />
