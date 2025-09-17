@@ -1,54 +1,57 @@
 <template>
   <div class="home">
     <h1>RAWG Spiele</h1>
-    <!-- Suchfeld -->
     <SearchBar v-model="search" />
-    <!-- Sortier-Dropdown -->
     <SortDropdown v-model="sortOrder" />
-    <!-- Spiele-Liste -->
-    <GameList :games="filteredGames" @toggleFavorite="toggleFavorite" />
+    <GameList :games="gamesWithFavorites" />
   </div>
 </template>
 
 <script>
+import { ref, computed, onMounted } from 'vue'
 import SearchBar from '../components/SearchBar.vue'
 import SortDropdown from '../components/SortDropdown.vue'
 import GameList from '../components/GameList.vue'
+import { useFavoritesStore } from '../stores/favorites'
 
 export default {
   name: 'HomeView',
   components: { SearchBar, SortDropdown, GameList },
-  data() {
-    return {
-      games: [],      // Alle Spiele von RAWG
-      search: '',     // Suchbegriff
-      sortOrder: 'desc' // Sortierreihenfolge
-    }
-  },
-  mounted() {
-    const apiKey = process.env.VUE_APP_RAWG_API_KEY
-    fetch(`https://api.rawg.io/api/games?key=${apiKey}`)
-      .then(res => res.json())
-      .then(data => {
-        this.games = data.results.map(game => ({ ...game, favorite: false }))
-      })
-      .catch(err => console.error(err))
-  },
-  computed: {
-    filteredGames() {
-      return this.games
-        .filter(game => game.name.toLowerCase().includes(this.search.toLowerCase()))
+  setup() {
+    const search = ref('')
+    const sortOrder = ref('desc')
+    const games = ref([])
+    const favoritesStore = useFavoritesStore()
+
+    // API laden & Favoriten initialisieren
+    onMounted(async () => {
+      const apiKey = process.env.VUE_APP_RAWG_API_KEY
+      try {
+        const res = await fetch(`https://api.rawg.io/api/games?key=${apiKey}`)
+        const data = await res.json()
+        games.value = data.results
+      } catch (err) {
+        console.error(err)
+      }
+      await favoritesStore.loadFavorites()
+    })
+
+    // Spiele mit Favoriten-Flag
+    const gamesWithFavorites = computed(() =>
+      games.value
+        .filter(game => game.name.toLowerCase().includes(search.value.toLowerCase()))
         .sort((a, b) =>
-          this.sortOrder === 'asc'
+          sortOrder.value === 'asc'
             ? new Date(a.released) - new Date(b.released)
             : new Date(b.released) - new Date(a.released)
         )
-    }
-  },
-  methods: {
-    toggleFavorite(game) {
-      game.favorite = !game.favorite
-    }
+        .map(game => ({
+          ...game,
+          favorite: favoritesStore.isFavorite(game.id)
+        }))
+    )
+
+    return { search, sortOrder, gamesWithFavorites }
   }
 }
 </script>

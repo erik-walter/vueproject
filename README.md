@@ -1,6 +1,6 @@
-# RAWG Game Management Web App
+# Game Management Web App
 
-Dieses Projekt ist eine Web-Anwendung, die auf der RAWG API basiert und es Benutzern ermöglicht, Spiele zu durchsuchen, zu favorisieren und zu verwalten. Die App nutzt Vue.js für das Frontend, Pinia für das State-Management und Firebase für Authentifizierung und Firestore-Datenbank. 
+Dieses Projekt ist eine Web-Anwendung, die auf der RAWG API basiert und es Benutzern ermöglicht, Spiele zu durchsuchen, zu favorisieren und zu verwalten. Die App nutzt Vue.js für das Frontend, Pinia für das State-Management und Firebase für Authentifizierung und Firestore-Datenbank. Die Anwendung ist auf Netlify deployed.
 
 Die Web-App ist online verfügbar unter: [RAWG Game Management App](https://lambent-sorbet-711924.netlify.app/)
 

@@ -1,28 +1,33 @@
 <template>
   <div>
     <h1>Favoriten</h1>
-    <GameList :games="favoriteGames" @toggleFavorite="toggleFavorite" />
+    <GameList :games="favoriteGames" />
   </div>
 </template>
 
 <script>
+import { computed } from 'vue'
+import { useFavoritesStore } from '../stores/favorites'
 import GameList from '../components/GameList.vue'
 
 export default {
   name: 'FavoritesView',
   components: { GameList },
-  data() {
-    return {
-      // Hier könntest du nur die favorisierten Spiele laden
-      favoriteGames: []
-    }
-  },
-  methods: {
-    toggleFavorite(game) {
-      // Favoritenstatus umschalten und Liste aktualisieren
-      game.favorite = !game.favorite
-      this.favoriteGames = this.favoriteGames.filter(g => g.favorite)
-    }
+  setup() {
+    const favoritesStore = useFavoritesStore()
+
+    // Favoriten aus Store
+    const favoriteGames = computed(() =>
+      favoritesStore.favorites.map(id => ({
+        id,
+        name: `Game ${id}`,             // Platzhalter falls API-Daten fehlen
+        released: 'unknown',
+        background_image: 'https://via.placeholder.com/200',
+        favorite: true
+      }))
+    )
+
+    return { favoriteGames }
   }
 }
 </script>
