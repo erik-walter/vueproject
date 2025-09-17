@@ -1,8 +1,12 @@
 <template>
   <div class="home">
-    <h1>RAWG Spiele Test</h1>
-    <SearchBar v-model="search" />
-    <SortDropdown v-model="sortOrder" />
+    <h1>RAWG Spiele</h1>
+
+    <div class="controls">
+      <SearchBar v-model="search" />
+      <SortDropdown v-model="sortOrder" />
+    </div>
+
     <GameList :games="gamesWithFavorites" />
   </div>
 </template>
@@ -23,7 +27,6 @@ export default {
     const games = ref([])
     const favoritesStore = useFavoritesStore()
 
-    // API laden & Favoriten initialisieren
     onMounted(async () => {
       const apiKey = process.env.VUE_APP_RAWG_API_KEY
       try {
@@ -36,7 +39,6 @@ export default {
       await favoritesStore.loadFavorites()
     })
 
-    // Spiele mit Favoriten-Flag
     const gamesWithFavorites = computed(() =>
       games.value
         .filter(game => game.name.toLowerCase().includes(search.value.toLowerCase()))
@@ -58,7 +60,30 @@ export default {
 
 <style scoped>
 .home {
+  background-color: #121212;
+  color: #f0f0f0;
+  min-height: 100vh;
   text-align: center;
-  margin-top: 50px;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+/* Grid für 3 Spiele pro Reihe */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* immer 3 pro Zeile */
+  gap: 20px;
+  justify-items: center;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 800px; /* optional, damit es zentriert bleibt */
 }
 </style>
